@@ -6,6 +6,7 @@
 import { Request, Response } from 'express';
 
 import CreateMessageService from '../services/CreateMessageService';
+import ListUserMessagesService from '../services/ListUserMessagesService';
 
 class MessagesController {
   async create(request: Request, response: Response): Promise<Response>{
@@ -20,6 +21,17 @@ class MessagesController {
     });
 
     return response.json(newMessage);
+  }
+
+  // list all messages from user
+  async list(request: Request, response: Response): Promise<Response>{
+    // route params
+    const { id } = request.params;
+
+    const listUserMessagesService = new ListUserMessagesService();
+    const messages = await listUserMessagesService.execute(id);
+
+    return response.json(messages);
   }
 }
 
