@@ -1,24 +1,28 @@
 /**
- * Controller to handle logic over the Settings entity
+ * Controller to receive the request regarding the Settings resource
+ * and assign the logic to the corresponding service
  */
 
 import { Request, Response } from 'express';
-import {getCustomRepository} from 'typeorm';
-import SettingsRepository from '../repositories/SettingsRepository';
+import CreateSettingsService from '../services/CreateSettingsService';
 
 class SettingsController {
   public async create(request: Request, response: Response){
     const { chat, username } = request.body;
-    const settingsRepository = getCustomRepository(SettingsRepository);
 
-    const settings = settingsRepository.create({
-      chat,
-      username
-    });
+    // creating a service to create a settings register in the database
+    const createSettingsService = new CreateSettingsService();
 
-    // saving the settings into database
-    await settingsRepository.save(settings);
-    return response.json(settings);
+    try{
+      const settings = await createSettingsService.execute({
+        chat,
+        username
+      });
+      return response.json(settings);
+    }catch(err){
+      // in case the user already exists
+      return response.status(400).json({error: err.message});
+    }
   }
 }
 
