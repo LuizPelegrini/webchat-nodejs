@@ -17,6 +17,15 @@ class SettingsRepository extends Repository<Setting> {
 
     return settings;
   }
+
+  // using another way to update a specific register using TypeORM query builder
+  public async updateByUsername(username: string, chat: boolean): Promise<void>{
+    await this.createQueryBuilder()
+      .update(Setting)
+      .set({chat})
+      .where('username = :username', {username})
+      .execute();
+  }
 }
 
 export default SettingsRepository;

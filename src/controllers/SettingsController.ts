@@ -6,6 +6,7 @@
 import { Request, Response } from 'express';
 import CreateSettingsService from '../services/CreateSettingsService';
 import FetchSettingsByUsernameService from '../services/FetchSettingsByUsernameService';
+import UpdateSettingService from '../services/UpdateSettingService';
 
 class SettingsController {
   public async create(request: Request, response: Response){
@@ -34,6 +35,17 @@ class SettingsController {
     const settings = await fetchSettingsByUsernameService.execute(username);
 
     return response.json(settings);
+  }
+
+  // just adding a way so we can change the settings via a route
+  public async update(request: Request, response: Response){
+    const { username } = request.params;
+    const { chat } = request.body;
+
+    const updateSettingService = new UpdateSettingService();
+    await updateSettingService.execute(username, chat);
+
+    return response.json({ message: 'settings changed'});
   }
 }
 
