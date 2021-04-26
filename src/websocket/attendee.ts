@@ -12,6 +12,11 @@ import FetchUserByEmailService from '../services/FetchUserByEmailService';
 import UpdateConnectionService from '../services/UpdateConnectionSerivce';
 import CreateMessageService from '../services/CreateMessageService';
 
+interface IParams{
+  text: string;
+  email: string;
+}
+
 // fired whenever an attendee connects
 io.on('connect', (socket: Socket) => {
   const createConnectionService = new CreateConnectionService();
@@ -20,7 +25,7 @@ io.on('connect', (socket: Socket) => {
 
   // list to event 'attendee_first_access' which is fired on the client-side (browser)
   socket.on('attendee_first_access', async params => {
-    const { email, text } = params;
+    const { email, text } = params as IParams;
 
     const fetchUserByEmailService = new FetchUserByEmailService();
     const createUserService = new CreateUserService();
