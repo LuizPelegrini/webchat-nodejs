@@ -10,6 +10,7 @@ import CreateUserService from '../services/CreateUserService';
 import FetchConnectionByUserIdService from '../services/FetchConnectionByUserIdService';
 import FetchUserByEmailService from '../services/FetchUserByEmailService';
 import UpdateConnectionService from '../services/UpdateConnectionSerivce';
+import CreateMessageService from '../services/CreateMessageService';
 
 // fired whenever an attendee connects
 io.on('connect', (socket: Socket) => {
@@ -20,9 +21,11 @@ io.on('connect', (socket: Socket) => {
   // list to event 'attendee_first_access' which is fired on the client-side (browser)
   socket.on('attendee_first_access', async params => {
     const { email, text } = params;
+
     const fetchUserByEmailService = new FetchUserByEmailService();
     const createUserService = new CreateUserService();
     const fetchConnectionByUserIdService = new FetchConnectionByUserIdService();
+    const createMessageService = new CreateMessageService();
 
     // check if the user already is registered in the database based on its email
     let user = await fetchUserByEmailService.execute(email);
@@ -47,5 +50,11 @@ io.on('connect', (socket: Socket) => {
         user_id: user.id
       });
     }
+
+    // inserting the first message in the database
+    await createMessageService.execute({
+      text,
+      user_id: user.id
+    })
   });
 });
