@@ -294,6 +294,12 @@ input[type="text"]:focus {
 }
 
 .admin_message_admin {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin_message_admin > div {
   width: 300px;
   background: #e0e0e0;
   padding: 10px;
