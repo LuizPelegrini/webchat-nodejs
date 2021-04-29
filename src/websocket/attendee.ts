@@ -11,6 +11,7 @@ import FetchConnectionByUserIdService from '../services/FetchConnectionByUserIdS
 import FetchUserByEmailService from '../services/FetchUserByEmailService';
 import UpdateConnectionService from '../services/UpdateConnectionSerivce';
 import CreateMessageService from '../services/CreateMessageService';
+import ListUserMessageService from '../services/ListUserMessagesService';
 
 interface IParams{
   text: string;
@@ -31,6 +32,7 @@ io.on('connect', (socket: Socket) => {
     const createUserService = new CreateUserService();
     const fetchConnectionByUserIdService = new FetchConnectionByUserIdService();
     const createMessageService = new CreateMessageService();
+    const listUserMessageService = new ListUserMessageService();
 
     // check if the user already is registered in the database based on its email
     let user = await fetchUserByEmailService.execute(email);
@@ -60,6 +62,12 @@ io.on('connect', (socket: Socket) => {
     await createMessageService.execute({
       text,
       user_id: user.id
-    })
+    });
+
+    // get all messages from this user to show in the chat history
+    const allMessages = await listUserMessageService.execute(user.id);
+
+    // emit event so frontend can list all messages
+    socket.emit('attendee_list_all_messages', allMessages);
   });
 });

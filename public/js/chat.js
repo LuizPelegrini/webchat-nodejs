@@ -21,4 +21,30 @@ document.querySelector("#start_chat").addEventListener("click", (event) => {
         console.log(call)
     });
   });
+
+  // upon receiving a list of messages from server...
+  socket.on('attendee_list_all_messages', messages => {
+    const message_user_template = document.getElementById('message-user-template').innerHTML;
+    const message_admin_template = document.getElementById('admin-template').innerHTML;
+
+    messages.forEach(message => {
+      // if no admin_id in the message, it means the message has been sent from attendee
+      if(message.admin_id === null){
+        // get the template and render the values in their respective keys
+        const rendered = Mustache.render(message_user_template, {
+          message: message.text, // message is the variable between {{}} in the DOM
+          email,
+        });
+
+        // inject the template in the 'messages' div
+        document.getElementById('messages').innerHTML += rendered;
+      }else{
+        const rendered = Mustache.render(message_admin_template, {
+          message_admin: message.text,
+        });
+
+        document.getElementById('messages').innerHTML += rendered;
+      }
+    });
+  });
 });
