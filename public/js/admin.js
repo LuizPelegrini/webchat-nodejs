@@ -21,6 +21,7 @@ socket.on('attendant_list_all_users', connections => {
   });
 });
 
+// function to be called when attendant chooses an attendee
 function call(socket_id){
   const { user, user_id } = connectionsUsers.find(connection => connection.socket_id === socket_id);
 
@@ -31,4 +32,35 @@ function call(socket_id){
   });
 
   document.getElementById('supports').innerHTML += rendered;
+
+  const params = {
+    user_id,
+  };
+  // request all messages from this user
+  socket.emit('attendant_list_messages_by_user', params, messages => {
+    const divMessages = document.getElementById(`allMessages${user_id}`);
+
+    messages.forEach((message) => {
+      const createDiv = document.createElement('div');
+
+      if (message.admin_id === null) {
+        createDiv.className = "admin_message_client";
+
+        createDiv.innerHTML = `<span>${user.email} </span>`;
+        createDiv.innerHTML += `<span>${message.text}</span>`;
+        createDiv.innerHTML += `<span class="admin_date">${dayjs(
+          message.created_at
+        ).format("DD/MM/YYYY HH:mm:ss")}</span>`;
+      } else {
+        createDiv.className = "admin_message_admin";
+
+        createDiv.innerHTML = `Attendant: <span>${message.text}</span>`;
+        createDiv.innerHTML += `<span class="admin_date>${dayjs(
+          message.created_at
+        ).format("DD/MM/YYYY HH:mm:ss")}`;
+      }
+
+      divMessages.appendChild(createDiv);
+    });
+  });
 }
