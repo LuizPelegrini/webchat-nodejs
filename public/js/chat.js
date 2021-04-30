@@ -1,3 +1,7 @@
+let email = null;
+let socket = null;
+let socket_admin_id = null;
+
 document.querySelector("#start_chat").addEventListener("click", (event) => {
   const chat_help = document.getElementById('chat_help');
   chat_help.style.display = 'none';
@@ -5,13 +9,11 @@ document.querySelector("#start_chat").addEventListener("click", (event) => {
   const chat_in_support = document.getElementById('chat_in_support');
   chat_in_support.style.display = 'block';
 
+  // establish a connection with server. URL defaults to the url of the server that served the page
+  socket = io();
 
-  const socket = io(); // establish a connection with server. URL defaults to the url of the server that served the page
-
-  const email = document.getElementById('email').value;
+  email = document.getElementById('email').value;
   const text = document.getElementById('txt_help').value;
-
-  let socket_admin_id = null;
 
   // upon connecting to websocket...
   socket.on('connect', () => {
@@ -51,7 +53,7 @@ document.querySelector("#start_chat").addEventListener("click", (event) => {
   });
 
   // upon receiving a message from attendant
-  socket.on('attendant_send_message', message => {
+  socket.on('attendee_receive_message', message => {
     // caching the socket id, so the attendee can reply to this socket
     socket_admin_id = message.socket_id;
 
@@ -64,4 +66,26 @@ document.querySelector("#start_chat").addEventListener("click", (event) => {
     // and adding to the chat
     document.getElementById("messages").innerHTML += rendered;
   });
+});
+
+document.querySelector('#send_message_button').addEventListener('click', event => {
+  const inputEl = document.getElementById('message_user');
+  const params = {
+    text: inputEl.value,
+    socket_admin_id, // the socket which the websocket server will forward this message to
+  };
+
+  // send message to attendee websocket
+  socket.emit('attendee_send_message', params);
+
+  // add the message balloon in the chat
+  const template_client = document.getElementById('message-user-template').innerHTML;
+
+  const rendered = Mustache.render(template_client, {
+    message: inputEl.value,
+    email,
+  });
+
+  document.getElementById('messages').innerHTML += rendered;
+  inputEl.value = '';
 });

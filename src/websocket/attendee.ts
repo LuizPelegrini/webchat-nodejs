@@ -12,6 +12,7 @@ import FetchUserByEmailService from '../services/FetchUserByEmailService';
 import UpdateConnectionService from '../services/UpdateConnectionSerivce';
 import CreateMessageService from '../services/CreateMessageService';
 import ListUserMessageService from '../services/ListUserMessagesService';
+import FindAllConnectionsWithoutAdminService from '../services/FindAllConnectionsWithoutAdminService';
 
 interface IParams{
   text: string;
@@ -21,8 +22,10 @@ interface IParams{
 // fired whenever an attendee connects
 io.on('connect', (socket: Socket) => {
   const createConnectionService = new CreateConnectionService();
+  const createMessageService = new CreateMessageService();
 
   const socket_id = socket.id;
+  let user = null;
 
   // list to event 'attendee_first_access' which is fired on the client-side (browser)
   socket.on('attendee_first_access', async params => {
@@ -31,11 +34,11 @@ io.on('connect', (socket: Socket) => {
     const fetchUserByEmailService = new FetchUserByEmailService();
     const createUserService = new CreateUserService();
     const fetchConnectionByUserIdService = new FetchConnectionByUserIdService();
-    const createMessageService = new CreateMessageService();
     const listUserMessageService = new ListUserMessageService();
+    const findAllConnectionsWithoutAdminService = new FindAllConnectionsWithoutAdminService();
 
     // check if the user already is registered in the database based on its email
-    let user = await fetchUserByEmailService.execute(email);
+    user = await fetchUserByEmailService.execute(email);
     if(!user){
       user = await createUserService.execute(email);
     }
@@ -69,5 +72,26 @@ io.on('connect', (socket: Socket) => {
 
     // emit event so frontend can list all messages
     socket.emit('attendee_list_all_messages', allMessages);
+
+    const allConnectionsWithoutAdmin = await findAllConnectionsWithoutAdminService.execute();
+    // broadcast to all attendants a connection has been created/updated
+    io.emit('attendant_list_all_users', allConnectionsWithoutAdmin);
+  });
+
+  // when attendee frontend send a message
+  socket.on('attendee_send_message', async params => {
+    const { text, socket_admin_id } = params;
+
+    // adding message to database
+    const message = await createMessageService.execute({
+      text,
+      user_id: user.id
+    });
+
+    // forwarding the text to the corresponding attendant socket
+    io.to(socket_admin_id).emit('attendant_receive_message', {
+      message,
+      attendee_socket_id: socket_id,
+    });
   });
 });

@@ -2,7 +2,7 @@
 const socket = io();
 let connectionsUsers = [];
 
-// websocket server will emit 'attendant_list_all_users' as soon as any attendant connects to the websocket server
+// websocket server will emit 'attendant_list_all_users' to update the list of users not yet assisted by an attendant
 socket.on('attendant_list_all_users', connections => {
   connectionsUsers = connections; // cache the connections
   const listUsersEl = document.getElementById('list_users');
@@ -21,9 +21,34 @@ socket.on('attendant_list_all_users', connections => {
   });
 });
 
-// function to be called when attendant chooses an attendee
+// fired by the attendee websocket when it sends a message
+socket.on('attendant_receive_message', params => {
+  const {
+    message: { text, user_id, created_at },
+    attendee_socket_id
+  } = params;
+
+  // console.log('connectionsUsers', connectionsUsers);
+  // console.log('params',params);
+
+  const { user } = connectionsUsers.find(connection => connection.socket_id === attendee_socket_id);
+
+  const divMessages = document.getElementById(`allMessages${user_id}`);
+  const createDiv = document.createElement('div');
+
+  createDiv.className = "admin_message_client";
+
+  const divEl = document.createElement('div');
+  divEl.innerHTML = `<span>${user.email} </span>`;
+  divEl.innerHTML += `<span>${text}</span>`;
+  divEl.innerHTML += `<span class="admin_date">${dayjs(created_at).format("DD/MM/YYYY HH:mm:ss")}</span>`;
+  createDiv.append(divEl);
+  divMessages.appendChild(createDiv);
+});
+
 function call(socket_id){
-  const { user, user_id } = connectionsUsers.find(connection => connection.socket_id === socket_id);
+  const connection = connectionsUsers.find(connection => connection.socket_id === socket_id);
+  const { user, user_id } = connection;
 
   const admin_template = document.getElementById('admin_template').innerHTML;
   const rendered = Mustache.render(admin_template, {
@@ -34,8 +59,12 @@ function call(socket_id){
   document.getElementById('supports').innerHTML += rendered;
 
   const params = {
-    user_id,
+    user_id
   };
+
+  // request attendant websocket to update the connection (by setting the admin_id to the connection)
+  socket.emit('attendant_in_call', params);
+
   // request all messages from this user
   socket.emit('attendant_list_messages_by_user', params, messages => {
     const divMessages = document.getElementById(`allMessages${user_id}`);
@@ -86,10 +115,14 @@ function sendMessage(user_id){
   const divMessagesEl = document.getElementById(`allMessages${user_id}`);
   const createDiv = document.createElement('div');
   createDiv.className = "admin_message_admin";
-  createDiv.innerHTML = `Attendant: <span>${inputEl.value}</span>`;
-  createDiv.innerHTML += `<span class="admin_date">${dayjs(
+
+  const divEl = document.createElement('div');
+  divEl.innerHTML = `Attendant: <span>${inputEl.value}</span>`;
+  divEl.innerHTML += `<span class="admin_date">${dayjs(
     Date.now()
   ).format("DD/MM/YYYY HH:mm:ss")}</span>`;
+
+  createDiv.append(divEl);
   divMessagesEl.appendChild(createDiv);
 
   // clearing the input

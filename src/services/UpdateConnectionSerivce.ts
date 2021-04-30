@@ -25,6 +25,19 @@ class UpdateConnectionService{
     await connectionsRepository.save(connection);
     return connection;
   }
+
+  // updates connection admin_id based on the user_id
+  public async executeAdmin(user_id: string, admin_id: string): Promise<void>{
+    const connectionsRepository = getCustomRepository(ConnectionsRepository);
+    await connectionsRepository
+      .createQueryBuilder()
+      .update(Connection)
+      .set({admin_id})
+      .where('user_id = :user_id', {
+        user_id
+      })
+      .execute();
+  }
 }
 
 export default UpdateConnectionService;

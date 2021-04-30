@@ -8,6 +8,7 @@ import FindAllConnectionsWithoutAdminService from '../services/FindAllConnection
 import ListUserMessagesService from '../services/ListUserMessagesService';
 import FetchConnectionByUserIdService from '../services/FetchConnectionByUserIdService';
 import CreateMessageService from '../services/CreateMessageService';
+import UpdateConnectionService from '../services/UpdateConnectionSerivce';
 
 // as soon as the attendant connects to the server...
 io.on('connect', async (socket: Socket) => {
@@ -15,6 +16,7 @@ io.on('connect', async (socket: Socket) => {
   const listUserMessagesService = new ListUserMessagesService();
   const fetchConnectionByUserIdService = new FetchConnectionByUserIdService();
   const createMessageService = new CreateMessageService();
+  const updateConnectionService = new UpdateConnectionService();
 
   // ...get all connections without an attendant
   const allConnectionsWithoutAdmin = await findAllConnectionsWithoutAdminService.execute();
@@ -33,6 +35,7 @@ io.on('connect', async (socket: Socket) => {
     callback(allMessages);
   });
 
+  // event fired by the attendant front end when it sends a message
   socket.on('attendant_send_message', async(params) => {
     const { user_id, text } = params;
 
@@ -47,10 +50,22 @@ io.on('connect', async (socket: Socket) => {
     const { socket_id } = await fetchConnectionByUserIdService.execute(user_id);
 
     // sending to a specific socket (in which the user is connected to)
-    io.to(socket_id).emit('attendant_send_message', {
+    io.to(socket_id).emit('attendee_receive_message', {
       text,
       socket_id: socket.id, // sending the attendant socket id, so the user can send message back
     });
 
+  });
+
+  // this event is called when the attendant clicks on the Assist button
+  socket.on('attendant_in_call', async (params) => {
+    const { user_id } = params;
+
+    // set the admin for the connection that has this user_id
+    await updateConnectionService.executeAdmin(user_id, socket.id);
+
+    // tell all attendants to update their list of users without admin (e.g. waiting for assistance)
+    const allConnectionsWithoutAdmin = await findAllConnectionsWithoutAdminService.execute();
+    io.emit('attendant_list_all_users', allConnectionsWithoutAdmin);
   });
 });
