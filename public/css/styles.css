@@ -11,7 +11,7 @@ body {
 
 .btn_support {
   float: right;
-  width: 153px;
+  width: 140px;
   height: 56px;
 
   background: #8257e6;
@@ -29,10 +29,13 @@ body {
   bottom: 30px;
   right: 10px;
   cursor: pointer;
+
+  transition: all 0.3s;
 }
 
 .btn_support:hover {
-  opacity: 0.9;
+  background: #5e3fa5;
+  transform: scale(1.02);
 }
 
 .chat {
@@ -42,11 +45,11 @@ body {
 
 .in_support_header {
   float: right;
-  width: 320px;
-  height: 56px;
+  width: 100%;
+  height: 46px;
 
   background: #8257e6;
-  border-radius: 16px 16px 0px 0px;
+  border-radius: 8px 8px 0px 0px;
 
   display: flex;
   justify-content: space-between;
@@ -56,6 +59,9 @@ body {
   color: #fff;
   display: flex;
   align-items: center;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
 }
 
 .icon_close {
@@ -69,6 +75,9 @@ body {
   max-width: 330px;
   right: 10px;
   animation: up 1s;
+  box-shadow: 0 0 20px #949393;
+  padding: 0;
+  border-radius: 6px;
 }
 
 .chat_support_hide {
@@ -78,7 +87,7 @@ body {
 
 @keyframes up {
   from {
-    transform: translateY(60vh);
+    transform: translateY(20vh);
   }
   to {
     transform: translateY(0);
@@ -173,8 +182,12 @@ body {
   padding-top: 8px;
 }
 
+.text_support.text_help{
+  border-radius: 0 0 8px 8px;
+}
+
 .text_help textarea {
-  width: 290px;
+  width: 100%;
   height: 115px;
 
   padding: 10px;
@@ -185,6 +198,17 @@ body {
   border-radius: 4px;
 
   resize: none;
+}
+
+.text_help textarea:focus{
+  outline: 3px solid #8257e6;
+  border-color: #8257e6;
+}
+
+.text_help span {
+  padding: 0;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .first_email {
@@ -198,40 +222,52 @@ body {
   box-sizing: border-box;
   border-radius: 4px;
   height: 42px;
-  width: 290px;
+  width: 100%;
 }
 
 input[type="text"]:focus {
-  outline: 1px solid #a8a8a8;
+  outline: 1px solid #8257e6;
+  border-color: #8257e6;
 }
 
 .btn_start_chat {
   width: 121px;
-  height: 40px;
+  height: 100%;
 
-  background: #8257e6;
+  background-color: #8257e6;
   border-radius: 4px;
   color: #fff;
   border: none;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .btn_start_chat:hover {
-  opacity: 0.8;
+  background-color: #6442b1;
 }
 
 .btn_cancel {
+  border-radius: 4px;
+  height: 100%;
+  width: 100px;
   border: 0;
   cursor: pointer;
   margin-right: 10px;
+  background-color: #c43766;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.btn_cancel:hover{
+  background-color: #91274b;
 }
 
 .button {
+  height: 45px;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  padding: 10px;
 }
 
 #txt_help:focus {
@@ -239,8 +275,13 @@ input[type="text"]:focus {
 }
 
 .charac_remaining {
-  font-size: 10px;
+  font-size: 14px;
+  color: #a5a4a4;
   float: right;
+}
+
+#charac_remaining {
+  padding: 0;
 }
 
 .date {
