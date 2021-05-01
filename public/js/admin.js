@@ -1,6 +1,7 @@
 // if attendant access the webpage, connect it immediatelly
 const socket = io();
 let connectionsUsers = [];
+let connectionsInSupport = [];
 
 // websocket server will emit 'attendant_list_all_users' to update the list of users not yet assisted by an attendant
 socket.on('attendant_list_all_users', connections => {
@@ -28,10 +29,8 @@ socket.on('attendant_receive_message', params => {
     attendee_socket_id
   } = params;
 
-  // console.log('connectionsUsers', connectionsUsers);
-  // console.log('params',params);
-
-  const { user } = connectionsUsers.find(connection => connection.socket_id === attendee_socket_id);
+  // find the user among the connections currently in support
+  const { user } = connectionsInSupport.find(connection => connection.socket_id === attendee_socket_id);
 
   const divMessages = document.getElementById(`allMessages${user_id}`);
   const createDiv = document.createElement('div');
@@ -48,6 +47,7 @@ socket.on('attendant_receive_message', params => {
 
 function call(socket_id){
   const connection = connectionsUsers.find(connection => connection.socket_id === socket_id);
+  connectionsInSupport.push(connection);
   const { user, user_id } = connection;
 
   const admin_template = document.getElementById('admin_template').innerHTML;
