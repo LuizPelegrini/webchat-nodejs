@@ -43,6 +43,9 @@ socket.on('attendant_receive_message', params => {
   divEl.innerHTML += `<span class="admin_date">${dayjs(created_at).format("DD/MM/YYYY HH:mm:ss")}</span>`;
   createDiv.append(divEl);
   divMessages.appendChild(createDiv);
+
+  // move the scroll to the bottom, so the recently received message is easily visible
+  divMessages.scrollTop = divMessages.scrollHeight;
 });
 
 function call(socket_id){
@@ -127,4 +130,7 @@ function sendMessage(user_id){
 
   // clearing the input
   inputEl.value = '';
+
+  // move the scroll to the bottom, so the recently received message is easily visible
+  divMessagesEl.scrollTop = divMessagesEl.scrollHeight;
 }

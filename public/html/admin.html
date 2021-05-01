@@ -11,11 +11,12 @@
   </head>
 
   <body>
+    <h3 class="admin_side">Attendant Side</h3>
     <div id="list_users"></div>
 
     <script id="template" type="x-tmpl-mustache">
-      <div id="user{{id}}">
-          <span class="email">Email: {{email}}</span>
+      <div id="user{{id}}" class="user_on_hold">
+          <span class="email"><strong>Email: </strong>{{email}}</span>
           <button class="btn_atd" onclick="call('{{id}}')">Assist</button>
       </div>
     </script>

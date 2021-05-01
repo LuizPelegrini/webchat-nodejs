@@ -106,10 +106,14 @@ body {
 .client {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
 }
 
 .client .name {
   text-align: end;
+  padding: 0;
+  color: #a5a4a4;
+  font-size: 13px;
 }
 
 .client_message {
@@ -128,14 +132,13 @@ body {
   padding: 20px 10px;
   margin: 10px 0;
   width: 250px;
-  margin-left: 30px;
   border-radius: 4px;
   line-height: 20px;
 }
 
 .text_support {
   border: 1px solid #cec9c9;
-  max-height: 500px;
+  max-height: 330px;
   overflow-y: scroll;
   /* border-bottom: 0px; */
 }
@@ -147,10 +150,9 @@ body {
 
 .admin .message {
   width: 230px;
-  background: #f2ecfa;
+  background: #eeeeee;
   border-radius: 4px;
   padding: 10px;
-  margin-left: 12px;
 }
 
 .message_send {
@@ -298,20 +300,28 @@ input[type="text"]:focus {
   padding: 10px;
   display: flex;
   align-items: center;
+  transition: background 0.2s;
 }
 
 .btn_atd:hover {
-  opacity: 0.9;
+  background: #8b2121;
 }
 
 .admin {
-  border: 1px solid #ededed;
   margin-top: 5px;
+  align-items: flex-start;
+  border-radius: 6px;
+  padding: 0;
 }
 
-.email {
-  float: left;
-  width: 350px;
+#admin.admin{
+  border: 1px solid #ccc;
+}
+
+.admin_name{
+  padding: 0;
+  color: #a5a4a4;
+  font-size: 13px;
 }
 
 .admin_send_message {
@@ -327,17 +337,23 @@ input[type="text"]:focus {
 .admin_send_message button {
   width: 100px;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 .admin_list_messages {
   height: 300px;
   overflow-y: scroll;
+  width: 100%;
 }
 
 .admin_message_admin {
   width: 100%;
   display: flex;
   justify-content: flex-end;
+}
+
+.admin_message_admin .admin_date{
+  color: #313131;
 }
 
 .admin_message_admin > div {
@@ -370,15 +386,21 @@ input[type="text"]:focus {
   font-family: "Roboto", sans-serif;
 }
 
+.admin_message_client span{
+  display: block;
+}
+
 .admin_date {
   font-size: 10px;
-  color: #fff;
+  color: #dfdfdf;
 }
 
 .in_support {
   background: #8d7aef;
   color: #fff;
   font-size: 17px;
+  width: 100%;
+  border-radius: 6px 6px 0 0;
 }
 
 .btn_send {
@@ -389,4 +411,49 @@ input[type="text"]:focus {
 
 .btn_send:hover {
   opacity: 0.8;
+}
+
+#supports{
+  font-family: 'Roboto', sans-serif;
+}
+
+h3{
+  color: #8257e6;
+  font-family: 'Roboto', sans-serif;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+h3.client_side{
+  display: flex;
+  justify-content: flex-end;
+}
+
+h3.admin_side{
+  margin-bottom: 4px;
+}
+
+body{
+  margin: 0;
+}
+
+#list_users{
+  font-family: 'Roboto', sans-serif;
+  padding: 0;
+}
+
+.user_on_hold{
+  display: flex;
+  justify-content: space-between;
+  border-radius: 6px;
+  box-shadow: 0 0 5px #949393;
+  padding: 10px;
+}
+
+.user_on_hold .btn_atd{
+  border-radius: 6px;
+}
+
+.user_on_hold + .user_on_hold {
+  margin-top: 20px;
 }

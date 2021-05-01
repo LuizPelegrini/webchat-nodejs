@@ -1,6 +1,7 @@
 let email = null;
 let socket = null;
 let socket_admin_id = null;
+const messagesContainerEl = document.getElementById('messages_container');
 
 document.querySelector("#start_chat").addEventListener("click", (event) => {
   const chat_help = document.getElementById('chat_help');
@@ -65,6 +66,9 @@ document.querySelector("#start_chat").addEventListener("click", (event) => {
 
     // and adding to the chat
     document.getElementById("messages").innerHTML += rendered;
+
+    // move the scroll to the bottom, so the recently received message is easily visible
+    messagesContainerEl.scrollTop = messagesContainerEl.scrollHeight;
   });
 });
 
@@ -88,4 +92,7 @@ document.querySelector('#send_message_button').addEventListener('click', event =
 
   document.getElementById('messages').innerHTML += rendered;
   inputEl.value = '';
+
+  // move the scroll to the bottom, so the recently received message is easily visible
+  messagesContainerEl.scrollTop = messagesContainerEl.scrollHeight;
 });
